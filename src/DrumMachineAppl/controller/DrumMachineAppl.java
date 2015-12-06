@@ -17,9 +17,11 @@ public class DrumMachineAppl {
     JFrame theFrame;
     private static final int N_BEATS = 16;
     
+    //array for names of the channels
     String[] instrumentsName = {"Bass Drum", "Closed Hi-Hat", "Open Hi-Hat", "Acoustic Snare", "Crash Symbal", "Hand Clap", 
         "High Tom", "High Bongo", "Maracas", "Whistle", "Low Conga", "Cowbell", "Vibraslap", "Low-mid Tom", 
         "High Agogo", "Open Hi Conga"};
+    //array for numbers of the channels from midi Java library
     int[] instriments = {35, 42, 46, 38, 49, 39, 50, 60, 70, 72, 64, 56, 58, 47, 67, 63};
 
     public static void main(String[] args) {
@@ -36,6 +38,7 @@ public class DrumMachineAppl {
         checkboxList = new ArrayList<>();
         Box buttonBox = new Box(BoxLayout.Y_AXIS);
         
+        //create buttons and actionListeners
         JButton start = new JButton("Start");
         start.addActionListener(new MyStartListener());
         buttonBox.add(start);
@@ -62,6 +65,7 @@ public class DrumMachineAppl {
         
         theFrame.getContentPane().add(background);
         
+        //initialization layout for all checkboxes(per every instrument and every bit)
         GridLayout grid = new GridLayout(instrumentsName.length, N_BEATS);
         grid.setVgap(1);
         grid.setHgap(2);
@@ -75,7 +79,7 @@ public class DrumMachineAppl {
             checkboxList.add(c);
             mainPanel.add(c);
         }
-        
+        //initialization sequenser for midi sounds
         setUpMidi();
         
         theFrame.setBounds(50, 50, 300, 300);
@@ -93,14 +97,16 @@ public class DrumMachineAppl {
         }catch(Exception ex){}
     }
     
+    //create new track and start it in the loop
     public void buildTrackAndStart() {
         int[] trackList = null;
-        
+        //make sequence empty if it is not
         sequence.deleteTrack(track);
         track = sequence.createTrack();
         for(int i = 0; i < instriments.length; i++) {
             trackList = new int[instriments.length];
             int key = instriments[i];
+            //get all checked checkboxes and add them into track
             for(int j = 0; j < N_BEATS; j++) {
                 JCheckBox jc = (JCheckBox) checkboxList.get(j + (N_BEATS * i));
                 if(jc.isSelected()){
@@ -109,6 +115,7 @@ public class DrumMachineAppl {
                     trackList[j] = 0;
                 }
             }
+            //create track
             makeTracks(trackList);
             track.add(makeEvent(176, 1, 127, 0, 16));
         }
